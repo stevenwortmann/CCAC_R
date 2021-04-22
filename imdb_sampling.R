@@ -1,6 +1,7 @@
 library(dplyr)
 library(tibble)
 library(hflights)
+library(tidyverse)
 
 imdb_d <- read.csv('/users/steve_wortmann/desktop/dat204/wk9/imdb_top_1000.csv')
 imdb <- as_tibble(imdb_d) # tibble of csv file
@@ -15,7 +16,9 @@ imdb_2 <- filter(imdb_1, grepl('Action', Genre))
 imdb_2
 
 #3 Runtime arranged shortest to longest
-imdb_3 <- imdb_2 %>% arrange(Runtime)
+imdb_3 <- imdb_2 %>% arrange(as.numeric(Runtime)) %>% separate(col=Runtime, into=c("Numeric","Char"))
+imdb_3 <- imdb_3 %>% separate(col=Numeric, into=c("Runtime",NA), convert=T)
+imdb_3 <- imdb_3 %>% arrange(Runtime)
 imdb_3
 
 #4 Create yes/no column for IMDB score 8+
