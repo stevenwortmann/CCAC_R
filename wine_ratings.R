@@ -18,10 +18,17 @@ cor.test(italy$points,italy$price) # 0.5969127
 france <- filter(wine, grepl('France', country))
 cor.test(france$points,france$price) # 0.5079387
 
-ggplot(wine$points,wine$price) # Plot price vs. rating of all wines
-ggplot(wine, aes(x=points, y=price,color="#990239")) + geom_point() +
+# Plot price vs. rating of all wines
+ggplot(wine, aes(x=points, y=price, color="#990239")) + geom_point() +
   xlab('Rating (points)') + ylab('Price') + theme(legend.position = "none") +
   ggtitle('Wines Worldwide: Price vs. Rating')
 
-wineModel <- lm(points ~ price, data = wine) # Linear model of price/points data
+wineModel <- lm(price ~ points, data = wine) # Linear model of price/points data
 
+wineModel
+# (Intercept)       points  
+#   -422.021         5.185
+
+ggplot(wine, aes(x=points, y=price, color="#990239")) + geom_point() +
+  xlab('Rating (points)') + ylab('Price') + ylim(0,500) + theme(legend.position = "none") +
+  ggtitle('Wines Worldwide: Price vs. Rating') + geom_abline(intercept=-422.021, slope=5.185, color='purple')
