@@ -29,6 +29,24 @@ wineModel
 # (Intercept)       points  
 #   -422.021         5.185
 
+# Linear regression formula line added to plotted points graph
 ggplot(wine, aes(x=points, y=price, color="#990239")) + geom_point() +
-  xlab('Rating (points)') + ylab('Price') + ylim(0,500) + theme(legend.position = "none") +
+  xlab('Rating (points)') + ylab('Price') + ylim(0,1000) + theme(legend.position = "none") +
   ggtitle('Wines Worldwide: Price vs. Rating') + geom_abline(intercept=-422.021, slope=5.185, color='purple')
+
+linReg <- function(pts){
+  price <- 5.185*pts - 422.021
+  print(round(price,2))
+} # Linear regression formula as R function for quick use
+
+linReg(83) # $8.33
+linReg(87) # $29.07
+linReg(89) # $39.44
+
+linReg(81) # -$2.04 <- get paid to drink decent(?) wine
+
+# This linear regression model certainly has its limitations.
+# Any ranking under 81.39 under this model results in negative price.
+# Last time I checked, I can't pick up wine at the store for a living.
+# This model is idyllic, however it is simply not the world we live in unfortunately.
+# We can recognize that this is a rudimentary form of predictive modeling.
