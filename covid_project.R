@@ -18,20 +18,19 @@ countries
 
 colnames(countries) # Total cases and deaths per million, population density, GDP/capita, median age, human dev. index
 
-# T-test: top-20 deaths/million vs. median age
-t.test((countries%>%arrange(desc(median_age)))$total_deaths_per_million[1:20],
-       (countries%>%arrange(desc(total_deaths_per_million)))$total_deaths_per_million[1:20])
+# T-test: Comparing fatalities of lowest and highest median age countries...
+t.test((countries%>%arrange((median_age)))$total_deaths_per_million[1:20],
+       (countries%>%arrange(desc(median_age)))$total_deaths_per_million[1:20])
 
-# T-test: top-20 deaths/million vs. population density
-t.test((countries%>%arrange(desc(population_density)))$total_deaths_per_million[1:20],
-       (countries%>%arrange(desc(total_deaths_per_million)))$total_deaths_per_million[1:20])
+# T-test: Comparing fatalities of lowest and highest population density countries...
+t.test((countries%>%arrange(population_density))$total_deaths_per_million[1:20],
+       (countries%>%arrange(desc(population_density)))$total_deaths_per_million[1:20])
 
-# T-test: top-20 deaths/million vs. human dev. index (lowest)
+# T-test: Comparing fatalities of lowest and highest 20 HDI countries...
 t.test((countries%>%arrange(human_development_index))$total_deaths_per_million[1:20],
-       (countries%>%arrange(desc(total_deaths_per_million)))$total_deaths_per_million[1:20])
+       (countries%>%arrange(desc(human_development_index)))$total_deaths_per_million[1:20])
 
-# T-test: top-20 deaths/million vs. gdp/capita (lowest)
+# T-test: Comparing fatalities of lowest and highest 20 GDP/capita countries...
 t.test((countries%>%arrange(gdp_per_capita))$total_deaths_per_million[1:20],
-       (countries%>%arrange(desc(total_deaths_per_million)))$total_deaths_per_million[1:20])
+       (countries%>%arrange(desc(gdp_per_capita)))$total_deaths_per_million[1:20])
 
-countries%>%arrange((human_development_index))
