@@ -11,7 +11,7 @@ data %>% # Current United States data
   filter(grepl('United States', location)) %>% arrange(desc(date))
 
 countries <- data %>% # Key data for all countries
-  select(location, date, total_cases, total_cases_per_million, total_deaths, total_deaths_per_million, population_density, gdp_per_capita, median_age, human_development_index) %>%
+  select(location, date, total_cases, total_cases_per_million, total_deaths, total_deaths_per_million, population_density, gdp_per_capita, median_age, human_development_index, aged_65_older, aged_70_older) %>%
   filter(grepl((Sys.Date()-1),date)) %>% arrange(desc(total_deaths_per_million))
 
 countries
@@ -34,3 +34,10 @@ t.test((countries%>%arrange(human_development_index))$total_deaths_per_million[1
 t.test((countries%>%arrange(gdp_per_capita))$total_deaths_per_million[1:20],
        (countries%>%arrange(desc(gdp_per_capita)))$total_deaths_per_million[1:20])
 
+# T-test: Comparing fatalities of lowest and highest 20 aged-70+ countries...
+t.test((countries%>%arrange(aged_70_older))$total_deaths_per_million[1:20],
+       (countries%>%arrange(desc(aged_70_older)))$total_deaths_per_million[1:20])
+
+# T-test: Comparing fatalities of 20 lowest GDP/capital and 20 oldest median age countries...
+t.test((countries%>%arrange(gdp_per_capita))$total_deaths_per_million[1:20],
+       (countries%>%arrange(desc(aged_70_older)))$total_deaths_per_million[1:20])
