@@ -1,4 +1,5 @@
 library(tidyverse)
+library(plotly)
 
 url <- 'https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/owid-covid-data.csv'
 data <- as_tibble(read.csv(url))
@@ -46,6 +47,17 @@ ggplot(usa, aes(x=date, y=total_deaths, color="#990239")) + geom_point() +
   xlab('Time') + ylab('Total Deaths') + theme(legend.position = "none") +
   ggtitle('USA: Covid Deaths')
 
-ggplot(usa, aes(x=date, y=new_deaths, color="#990239")) + geom_point() +
+ggplotly(ggplot(data %>% filter(grepl('United States', location)), 
+  aes(x=date, y=new_deaths, color="#990239")) + geom_point() +
   xlab('Time') + ylab('New Deaths') + theme(legend.position = "none") +
-  ggtitle('USA: Covid New Deaths (Daily)')
+  ggtitle('USA: Covid New Deaths (Daily)'))
+
+ggplotly(ggplot(data %>% filter(grepl('Brazil', location)), 
+  aes(x=date, y=new_deaths, color="#990239")) + geom_point() +
+  xlab('Time') + ylab('New Deaths') + theme(legend.position = "none") +
+  ggtitle('Brazil: Covid New Deaths (Daily)'))
+
+ggplotly(ggplot(data %>% filter(grepl('India', location)), 
+  aes(x=date, y=new_deaths, color="#990239")) + geom_point() +
+  xlab('Time') + ylab('New Deaths') + theme(legend.position = "none") +
+  ggtitle('India: Covid New Deaths (Daily)'))
