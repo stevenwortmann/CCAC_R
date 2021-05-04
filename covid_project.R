@@ -61,3 +61,13 @@ ggplotly(ggplot(data %>% filter(grepl('India', location)),
   aes(x=date, y=new_deaths, color="#990239")) + geom_point() +
   xlab('Time') + ylab('New Deaths') + theme(legend.position = "none") +
   ggtitle('India: Covid New Deaths (Daily)'))
+
+ggplotly(ggplot(data %>% filter(grepl('India', location)), 
+  aes(x=date, y=new_cases, color="#990239")) + geom_point() +
+  xlab('Time') + ylab('New Cases') + theme(legend.position = "none") +
+  ggtitle('India: Covid New Cases (Daily)'))
+
+gplotly(ggplot(data %>% filter(grepl('India', location)), 
+  aes(x=date, y=new_deaths, color="#990239")) + geom_point() +
+  xlab('Time') + ylab('New Deaths') + theme(legend.position = "none") +
+  ggtitle('India: Covid New Deaths (Daily)'))
