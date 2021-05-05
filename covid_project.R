@@ -3,6 +3,7 @@ library(plotly)
 
 url <- 'https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/owid-covid-data.csv'
 data <- as_tibble(read.csv(url))
+data$date <- as.Date(data$date, '%Y-%m-%d')
 
 colnames(data)
 unique(data$location)
@@ -12,7 +13,7 @@ usa <- data %>% # Current United States data
   filter(grepl('United States', location)) #%>% arrange(desc(date))
 
 countries <- data %>% # Key data for all countries
-  select(location, date, total_cases, total_cases_per_million, total_deaths, total_deaths_per_million, population_density, gdp_per_capita, median_age, human_development_index, aged_65_older, aged_70_older) %>%
+  select(location, date, new_cases, new_deaths, total_cases, total_cases_per_million, total_deaths, total_deaths_per_million, population_density, gdp_per_capita, median_age, human_development_index, aged_65_older, aged_70_older) %>%
   filter(grepl((Sys.Date()-1),date)) %>% arrange(desc(total_deaths_per_million))
 
 countries
@@ -67,7 +68,21 @@ ggplotly(ggplot(data %>% filter(grepl('India', location)),
   xlab('Time') + ylab('New Cases') + theme(legend.position = "none") +
   ggtitle('India: Covid New Cases (Daily)'))
 
-gplotly(ggplot(data %>% filter(grepl('India', location)), 
+ggplotly(ggplot(data %>% filter(grepl('India', location)), 
   aes(x=date, y=new_deaths, color="#990239")) + geom_point() +
   xlab('Time') + ylab('New Deaths') + theme(legend.position = "none") +
   ggtitle('India: Covid New Deaths (Daily)'))
+
+
+
+continents <- c('World', 'North America', 'Europe', 'European Union', 'South America',
+                'Asia', 'Africa')
+
+top_10 <- (countries%>%arrange(desc(total_deaths)) %>% 
+             filter(!(location %in% continents)))$location[1:10]
+
+top_10
+
+ggplotly(ggplot(subset(data, location %in% top_10), aes(x=date, y=new_deaths, color=location)) + geom_point() +
+          xlab('Time') + ylab('New Deaths') + ylim(0, 4000) + ggtitle('Daily Covid Deaths Worldwide') +
+          theme(legend.position = "bottom") + scale_x_date(date_breaks = '1 month',date_labels = "%b-%y", limits = as.Date(c('2020-02-01',(Sys.Date()-1)))))
