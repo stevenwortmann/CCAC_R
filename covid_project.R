@@ -81,8 +81,22 @@ continents <- c('World', 'North America', 'Europe', 'European Union', 'South Ame
 top_10 <- (countries%>%arrange(desc(total_deaths)) %>% 
              filter(!(location %in% continents)))$location[1:10]
 
-top_10
+top_20 <- (countries%>%arrange(desc(total_deaths)) %>% 
+             filter(!(location %in% continents)))$location[1:20]
 
-ggplotly(ggplot(subset(data, location %in% top_10), aes(x=date, y=new_deaths, color=location)) + geom_point() +
-          xlab('Time') + ylab('New Deaths') + ylim(0, 4000) + ggtitle('Daily Covid Deaths Worldwide') +
-          theme(legend.position = "bottom") + scale_x_date(date_breaks = '1 month',date_labels = "%b-%y", limits = as.Date(c('2020-02-01',(Sys.Date()-1)))))
+top_10
+top_20
+
+
+# New deaths smoothed, top 10 countries
+ggplot(subset(data, location %in% top_10), aes(x=date, y=new_deaths_smoothed, color=location)) + geom_line() +
+           xlab('Time') + ylab('New Deaths') + ylim(0,4000) + ggtitle('Daily Covid Deaths Worldwide') +
+           theme(legend.position = "bottom") + scale_x_date(date_breaks = '1 month',date_labels = "%b%y", limits = as.Date(c('2020-02-01',(Sys.Date()-1))))
+ggplotly(ggplot(subset(data, location %in% top_10), aes(x=date, y=new_deaths_smoothed, color=location)) + geom_line() +
+           xlab('Time') + ylab('New Deaths') + ylim(0,4000) + ggtitle('Daily Covid Deaths Worldwide') +
+           theme(legend.position = "bottom") + scale_x_date(date_breaks = '1 month',date_labels = "%b%y", limits = as.Date(c('2020-02-01',(Sys.Date()-1)))))
+
+# New deaths/million smoothed, top 20 countries
+ggplot(subset(data, location %in% top_20), aes(x=date, y=new_deaths_smoothed_per_million, color=location)) + geom_line() +
+           xlab('Time') + ylab('New Deaths/Million') + ylim(0,25) + ggtitle('Daily Covid Deaths per Million, Worldwide') +
+           theme(legend.position = "bottom") + scale_x_date(date_breaks = '1 month',date_labels = "%b%y", limits = as.Date(c('2020-02-01',(Sys.Date()-1))))
