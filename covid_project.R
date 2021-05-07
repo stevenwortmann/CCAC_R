@@ -6,7 +6,7 @@ url <- 'https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/
 data <- as_tibble(read.csv(url))
 data$date <- as.Date(data$date, '%Y-%m-%d')
 
-colnames(data)
+data_cols <- colnames(data)
 unique(data$location)
 
 usa <- data %>% # Current United States data
