@@ -7,6 +7,7 @@ url <- 'https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/
 data <- as_tibble(read.csv(url))
 data$date <- as.Date(data$date, '%Y-%m-%d')
 
+data
 colnames(data)
 
 countries <- data %>% # Current key data for all countries
@@ -19,6 +20,9 @@ country_list <- countries$location
 ggplotly(ggplot(subset(data, location %in% top_20), aes(x=date, y=new_deaths_smoothed, color=location)) + geom_line() +
   xlab('Time') + ylab('New Deaths/Million') + ylim(0,4000) + ggtitle('Daily Covid Deaths per Million, Worldwide') +
   theme(legend.position = "bottom") + scale_x_date(date_breaks = '1 month',date_labels = "%b%y", limits = as.Date(c('2020-02-01',(Sys.Date()-1)))))
+
+
+
 
 
 ui <- function(input, output) {# Fill in the spot we created for a plot
@@ -37,9 +41,6 @@ ui <- function(input, output) {# Fill in the spot we created for a plot
     )
   )}
 
-
-?selectizeInput
-
 server <-function(input, output) {
     
     # Fill in the spot we created for a plot
@@ -52,3 +53,5 @@ server <-function(input, output) {
   }
 
 shinyApp(ui, server) # Run the app
+
+?selectizeInput
