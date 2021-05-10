@@ -6,20 +6,37 @@ url <- 'https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/
 data <- as_tibble(read.csv(url))
 data$date <- as.Date(data$date, '%Y-%m-%d')
 
-data_cols <- colnames(data)
+colnames(data)
 unique(data$location)
 
-usa <- data %>% # Current United States data
-  select(iso_code, continent, location, date, total_cases, new_cases, total_deaths, total_deaths_per_million, new_deaths) %>%
-  filter(grepl('United States', location)) #%>% arrange(desc(date))
+continents <- c('North America', 'Europe', 'European Union', 'South America','Asia', 'Africa')
 
-countries <- data %>% # Key data for all countries
-  select(location, date, new_cases, new_deaths, total_cases, total_cases_per_million, total_deaths, total_deaths_per_million, population_density, gdp_per_capita, median_age, human_development_index, aged_65_older, aged_70_older) %>%
-  filter(grepl((Sys.Date()-1),date)) %>% arrange(desc(total_deaths_per_million))
+# All aggregated world data
+world <- data %>% filter((location %in% 'World')) %>%
+  select(-iso_code,-continent) %>% arrange(desc(date))
 
-countries
+# All aggregated continental data
+continental <- data %>% filter((location %in% continents)) %>%
+  select(-iso_code,-continent) %>% arrange(desc(date))
 
-colnames(countries) # Total cases and deaths per million, population density, GDP/capita, median age, human dev. index
+# All USA data
+usa <- data %>% filter((location %in% 'United States')) %>%
+  select(-iso_code,-continent) %>% arrange(desc(date))
+
+# Current USA data
+usa %>% filter(grepl((Sys.Date()-1),date))
+
+# Current countries data, ranked most new deaths per million
+countries <- data %>% filter(!(location %in% continents)) %>%
+  select(-iso_code,-continent) %>% filter(grepl((Sys.Date()-1),date)) %>% arrange(desc(new_deaths_per_million))
+
+# top 10 countries by fatality
+top_10 <- (countries%>%arrange(desc(total_deaths)) %>% 
+             filter(!(location %in% continents)))$location[1:10]
+
+# top 20 countries by fatality
+top_20 <- (countries%>%arrange(desc(total_deaths)) %>% 
+             filter(!(location %in% continents)))$location[1:20]
 
 # T-test: Comparing fatalities of lowest and highest median age countries...
 t.test((countries%>%arrange((median_age)))$total_deaths_per_million[1:20],
@@ -73,21 +90,6 @@ ggplotly(ggplot(data %>% filter(grepl('India', location)),
   aes(x=date, y=new_deaths, color="#990239")) + geom_point() +
   xlab('Time') + ylab('New Deaths') + theme(legend.position = "none") +
   ggtitle('India: Covid New Deaths (Daily)'))
-
-
-
-continents <- c('World', 'North America', 'Europe', 'European Union', 'South America',
-                'Asia', 'Africa')
-
-top_10 <- (countries%>%arrange(desc(total_deaths)) %>% 
-             filter(!(location %in% continents)))$location[1:10]
-
-top_20 <- (countries%>%arrange(desc(total_deaths)) %>% 
-             filter(!(location %in% continents)))$location[1:20]
-
-top_10
-top_20
-
 
 # New deaths smoothed, top 10 countries
 ggplot(subset(data, location %in% top_10), aes(x=date, y=new_deaths_smoothed, color=location)) + geom_line() +
