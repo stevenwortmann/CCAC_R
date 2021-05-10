@@ -7,21 +7,16 @@ url <- 'https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/
 data <- as_tibble(read.csv(url))
 data$date <- as.Date(data$date, '%Y-%m-%d')
 
-data
-colnames(data)
+# Cleaning unnecessary coding from dataset and ordering most recent
+data <- data %>% select(-iso_code,-continent) %>%  arrange(desc(date))
 
-countries <- data %>% # Current key data for all countries
-  select(location, date, total_deaths, new_deaths_smoothed, total_deaths_per_million, total_cases, new_cases_smoothed, total_cases_per_million) %>%
-  arrange(desc(total_deaths))
-
-country_list <- countries$location
+# Non-location, date columns for use in statistics inputs
+stat_cols <- names(data)[!names(data) %in% c('location','date')]
 
 # Compended version of what we want on app
 ggplotly(ggplot(subset(data, location %in% top_20), aes(x=date, y=new_deaths_smoothed, color=location)) + geom_line() +
   xlab('Time') + ylab('New Deaths/Million') + ylim(0,4000) + ggtitle('Daily Covid Deaths per Million, Worldwide') +
   theme(legend.position = "bottom") + scale_x_date(date_breaks = '1 month',date_labels = "%b%y", limits = as.Date(c('2020-02-01',(Sys.Date()-1)))))
-
-
 
 
 
@@ -31,11 +26,13 @@ ui <- function(input, output) {# Fill in the spot we created for a plot
     sidebarLayout(
       sidebarPanel(
         selectInput("country", "Region:", 
-                    choices=country_list,),hr(),
+                    choices=data$location,),hr(),
         selectInput("rates", "Data 1:", 
-                    choices=colnames(data),),hr(),
-        selectInput("rates", "Data 2:", 
-                    choices=colnames(data),),hr(),
+                    choices=stat_cols,
+                    selected = 'total_cases',),hr(),
+        selectInput("rates2", "Data 2:", 
+                    choices=stat_cols,
+                    selected = 'total_deaths',),hr(),
         helpText("Data from www.ourworldindata.org")),
       
       mainPanel(plotlyOutput("phonePlot"))
@@ -43,10 +40,6 @@ ui <- function(input, output) {# Fill in the spot we created for a plot
   )}
 
 server <-function(input, output) {
-  
-  url <- 'https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/owid-covid-data.csv'
-  data <- as_tibble(read.csv(url))
-  data$date <- as.Date(data$date, '%Y-%m-%d')
   
   country <- reactive({subset(data, location== input$country)})
   
