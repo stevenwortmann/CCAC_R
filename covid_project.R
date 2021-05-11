@@ -21,22 +21,34 @@ top_10_deaths
 
 #Top 10 countries by deaths-per-million:
 top_10_deathsPerMillion <- (countries%>%arrange(desc(total_deaths_per_million)))$location[1:10]
-top_10_deathsPerMillion
 
 # Plot 1: Top-10 fatality countries, new deaths over time
-ggplot(subset(data, location %in% top_10_deaths), aes(x=date, y=new_deaths_smoothed, color=location,na.rm=T)) +
-  geom_line() + ylab('New Deaths') + ylim(0,3500) + ggtitle('Top 10 Countries: New Deaths') + 
+ggplot(subset(data, location %in% top_10_deaths), aes(x=date, y=new_deaths_smoothed, color=location, na.rm=T)) +
+  geom_line(na.rm=T) + ylab('New Deaths') + ylim(0,3500) + ggtitle('Top 10 Countries: New Deaths') + 
   theme(axis.title.x=element_blank(), legend.position = "bottom") +
   scale_x_date(date_breaks = '3 month',date_labels = "%b%y",limits = as.Date(c('2020-03-01','2021-05-01')))
 
 ggplotly(ggplot( # Interactive version of plot 1
-  subset(data, location %in% top_10_deaths), aes(x=date, y=new_deaths_smoothed, color=location,na.rm=T)) +
-    geom_line() + ylab('New Deaths') + ggtitle('Top 10 Countries: New Deaths') + 
+  subset(data, location %in% top_10_deaths), aes(x=date, y=new_deaths_smoothed, color=location, na.rm=T)) +
+    geom_line(na.rm=T) + ylab('New Deaths') + ggtitle('Top 10 Countries: New Deaths') + 
     theme(axis.title.x=element_blank(), legend.position = "none") +
     scale_x_date(date_breaks = '1 month',date_labels = "%b%y",limits = as.Date(c('2020-02-01',(Sys.Date()-1)))))
 
-countries %>% select(date,location,total_deaths_per_million) %>% arrange(desc(total_deaths_per_million))
-write.csv(countries, '/Users/steve_wortmann/Desktop/dat204/final/sample.csv')
+# Separate three groups for fatalities/capita: Highest, World average, most death countries
+three_groups <- c(top_10_deathsPerMillion, 'World', top_10_deaths)
+fatalityRateComparison <- data %>% filter(location %in% three_groups)
+fatalityRateComparison
+  
+ggplot(fatalityRateComparison, aes(x=date, y=total_deaths_per_million, na.rm=T)) +
+  geom_line(aes(colour = location),na.rm=T) + ylab('New Deaths') + ggtitle('Top 10 Countries: New Deaths') + 
+  theme(axis.title.x=element_blank(), legend.position = "bottom") +
+  scale_x_date(date_breaks = '3 month',date_labels = "%b%y",limits = as.Date(c('2020-03-01','2021-05-01')))
+
+
+
+
+
+
 
 # T-test: Comparing fatalities of lowest and highest median age countries...
 t.test((countries%>%arrange((median_age)))$total_deaths_per_million[1:20],
