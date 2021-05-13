@@ -59,27 +59,73 @@ ggplotly(ggplot( # Interactive version of plot 3
   theme(axis.title.x=element_blank(), legend.position = "none") + ylim(0,NA) +
   scale_x_date(date_breaks = '1 month',date_labels = "%b%y",limits = as.Date(c('2020-10-01',(Sys.Date()-1)))))
 
+# Average age of 10 most densely-fatal countries: 42.17778
+mean((countries %>% arrange(desc(total_deaths_per_million)))$median_age[1:10],na.rm=T)
 
+# Average age of countries with 10 highest median age: 45.81
+mean((countries %>% arrange(desc(median_age)))$median_age[1:10],na.rm=T)
 
+(countries %>% arrange(desc(median_age)))$location[1:50] # Oldest 50 countries on Earth
+mean((countries %>% arrange(desc(median_age)))$median_age[1:50]) # Their age: 42.292
 
-
-
-
-
-
-
+(countries %>% arrange((median_age)))$location[1:50] # Youngest 50 countries on Earth
+mean((countries %>% arrange((median_age)))$median_age[1:50]) # Their age: 19.068
 
 # T-test: Comparing fatalities of lowest and highest median age countries...
-t.test((countries%>%arrange((median_age)))$total_deaths_per_million[1:20],
-       (countries%>%arrange(desc(median_age)))$total_deaths_per_million[1:20])
+
+t.test((countries%>%arrange((median_age)))$total_deaths_per_million[1:50],
+       (countries%>%arrange(desc(median_age)))$total_deaths_per_million[1:50])
+#t = -9.1265, df = 48.279, p-value = 4.383e-12
+#alternative hypothesis: true difference in means is not equal to 0
+#95 percent confidence interval:
+#  -1397.7304  -893.1145
+#sample estimates:
+#  mean of x mean of y 
+#77.8436 1223.2660 
+
+(countries %>% arrange(desc(population_density)))$location[1:50] # 50 most population-dense countries
+mean((countries %>% arrange(desc(population_density)))$population_density[1:50]) # 1511.26 people/sq km
+
+(countries %>% arrange((population_density)))$location[1:50] # 50 most population-sparse countries
+mean((countries %>% arrange((population_density)))$population_density[1:50]) # 17.71 people/sq km
+
+# T-test: Comparing overall case density of lowest and highest population density countries...
+
+t.test((countries%>%arrange(population_density))$total_cases_per_million[1:50],
+       (countries%>%arrange(desc(population_density)))$total_cases_per_million[1:50])
+#t = -1.6751, df = 83.521, p-value = 0.09765
+#alternative hypothesis: true difference in means is not equal to 0
+#95 percent confidence interval:
+#  -25753.001   2204.774
+#sample estimates:
+#  mean of x mean of y 
+#23656.80  35430.91 
 
 # T-test: Comparing fatalities of lowest and highest population density countries...
-t.test((countries%>%arrange(population_density))$total_deaths_per_million[1:20],
-       (countries%>%arrange(desc(population_density)))$total_deaths_per_million[1:20])
 
-# T-test: Comparing fatalities of lowest and highest 20 HDI countries...
-t.test((countries%>%arrange(human_development_index))$total_deaths_per_million[1:20],
-       (countries%>%arrange(desc(human_development_index)))$total_deaths_per_million[1:20])
+t.test((countries%>%arrange(population_density))$total_deaths_per_million[1:50],
+       (countries%>%arrange(desc(population_density)))$total_deaths_per_million[1:50])
+#t = -0.28893, df = 89.082, p-value = 0.7733
+#alternative hypothesis: true difference in means is not equal to 0
+#95 percent confidence interval:
+#  -284.1111  211.9740
+#sample estimates:
+#  mean of x mean of y 
+#444.5189  480.5875 
+
+
+ggplot(subset(data, location == 'United States'), aes(x=date)) +
+  geom_line(aes(y=new_cases_smoothed_per_million), color = "darkred", na.rm=T) + 
+  geom_line(aes(y=total_vaccinations_per_hundred), color="steelblue", na.rm=T) +          
+  ylab('New Deaths per Million') + ggtitle('United States: New Cases per Million vs. Total Vaccinations per Hundred') + 
+  theme(axis.title.x=element_blank(), legend.position = "bottom") + 
+  scale_x_date(date_breaks = '1 month',date_labels = "%b%y",limits = as.Date(c('2020-10-01',(Sys.Date()-1))))
+
+
+
+
+colnames(countries)
+
 
 # T-test: Comparing fatalities of lowest and highest 20 GDP/capita countries...
 t.test((countries%>%arrange(gdp_per_capita))$total_deaths_per_million[1:20],
