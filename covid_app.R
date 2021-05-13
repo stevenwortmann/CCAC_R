@@ -26,7 +26,7 @@ ui <- function(input, output) {# Fill in the spot we created for a plot
     sidebarLayout(
       sidebarPanel(
         selectInput("country", "Region:", 
-                    choices=data$location,),hr(),
+                    choices=data$location[data$location %in% c("Israel","Mongolia")],),hr(),
         selectInput("rates", "Data 1:", 
                     choices=stat_cols,
                     selected = 'total_cases',),hr(),
