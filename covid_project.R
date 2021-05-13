@@ -28,21 +28,40 @@ ggplot(subset(data, location %in% top_10_deaths), aes(x=date, y=new_deaths_smoot
   theme(axis.title.x=element_blank(), legend.position = "bottom") +
   scale_x_date(date_breaks = '3 month',date_labels = "%b%y",limits = as.Date(c('2020-03-01','2021-05-01')))
 
-ggplotly(ggplot( # Interactive version of plot 1
-  subset(data, location %in% top_10_deaths), aes(x=date, y=new_deaths_smoothed, color=location, na.rm=T)) +
-    geom_line(na.rm=T) + ylab('New Deaths') + ggtitle('Top 10 Countries: New Deaths') + 
+ggplotly(ggplot(subset(data, location %in% top_10_deaths), aes(x=date, y=new_deaths_smoothed, color=location, na.rm=T)) +
+    geom_line(na.rm=T) + ylab('New Deaths') + ylim(0,3500) + ggtitle('Top 10 Countries: New Deaths') + 
     theme(axis.title.x=element_blank(), legend.position = "none") +
-    scale_x_date(date_breaks = '1 month',date_labels = "%b%y",limits = as.Date(c('2020-02-01',(Sys.Date()-1)))))
+    scale_x_date(date_breaks = '3 month',date_labels = "%b%y",limits = as.Date(c('2020-03-01','2021-05-01'))))
 
-# Separate three groups for fatalities/capita: Highest, World average, most death countries
-three_groups <- c(top_10_deathsPerMillion, 'World', top_10_deaths)
-fatalityRateComparison <- data %>% filter(location %in% three_groups)
-fatalityRateComparison
-  
-ggplot(fatalityRateComparison, aes(x=date, y=total_deaths_per_million, na.rm=T)) +
-  geom_line(aes(colour = location),na.rm=T) + ylab('New Deaths') + ggtitle('Top 10 Countries: New Deaths') + 
-  theme(axis.title.x=element_blank(), legend.position = "bottom") +
-  scale_x_date(date_breaks = '3 month',date_labels = "%b%y",limits = as.Date(c('2020-03-01','2021-05-01')))
+worldWide <- data %>% filter(data$location %in% c('World'))
+
+ggplot( # Plot 2: Most dense fatalities vs. World trend
+  subset(data, location == 'World' | location %in% top_10_deathsPerMillion), aes(x=date, y=new_deaths_smoothed_per_million, color=(location), na.rm=T)) +
+  geom_line(na.rm=T) + ylab('New Deaths per Million') + ggtitle('Worldwide: New Deaths per Million') + 
+  theme(axis.title.x=element_blank(), legend.position = "bottom") + ylim(0,30) +
+  scale_x_date(date_breaks = '1 month',date_labels = "%b%y",limits = as.Date(c('2020-10-01',(Sys.Date()-1))))
+
+ggplotly(ggplot( # Interactive version of plot 2
+  subset(data, location == 'World' | location %in% top_10_deathsPerMillion), aes(x=date, y=new_deaths_smoothed_per_million, color=(location), na.rm=T)) +
+    geom_line(na.rm=T) + ylab('New Deaths per Million') + ggtitle('Worldwide: New Deaths per Million') + 
+    theme(axis.title.x=element_blank(), legend.position = "none") + ylim(0,30) +
+    scale_x_date(date_breaks = '1 month',date_labels = "%b%y",limits = as.Date(c('2020-10-01',(Sys.Date()-1)))))
+
+ggplot( # Plot 3: Most total fatalities (density) vs. World trend
+  subset(data, location == 'World' | location %in% top_10_deaths), aes(x=date, y=new_deaths_smoothed_per_million, color=(location), na.rm=T)) +
+  geom_line(na.rm=T) + ylab('New Deaths per Million') + ggtitle('Worldwide: New Deaths per Million') + 
+  theme(axis.title.x=element_blank(), legend.position = "bottom") + ylim(0,30) +
+  scale_x_date(date_breaks = '1 month',date_labels = "%b%y",limits = as.Date(c('2020-10-01',(Sys.Date()-1))))
+
+ggplotly(ggplot( # Interactive version of plot 3
+  subset(data, location == 'World' | location %in% top_10_deaths), aes(x=date, y=new_deaths_smoothed_per_million, color=(location), na.rm=T)) +
+  geom_line(na.rm=T) + ylab('New Deaths per Million') + ggtitle('Worldwide: New Deaths per Million') + 
+  theme(axis.title.x=element_blank(), legend.position = "none") + ylim(0,NA) +
+  scale_x_date(date_breaks = '1 month',date_labels = "%b%y",limits = as.Date(c('2020-10-01',(Sys.Date()-1)))))
+
+
+
+
 
 
 
