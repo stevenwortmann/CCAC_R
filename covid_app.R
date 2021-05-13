@@ -35,7 +35,7 @@ ui <- function(input, output) {# Fill in the spot we created for a plot
                     selected = 'total_deaths',),hr(),
         helpText("Data from www.ourworldindata.org")),
       
-      mainPanel(plotlyOutput("phonePlot"))
+      mainPanel(plotlyOutput("covidPlot"))
     )
   )}
 
@@ -44,7 +44,7 @@ server <-function(input, output) {
   country <- reactive({subset(data, location== input$country)})
   
     # Fill in the spot we created for a plot
-    output$phonePlot <- renderPlotly({
+    output$covidPlot <- renderPlotly({
       ggplotly(ggplot(country(), aes(x=date)) + 
         geom_line(aes(y=input$rates1), color="darkred", na.rm=T)) + 
         geom_line(aes(y=input$rates2), color="steelblue", na.rm=T) + 
