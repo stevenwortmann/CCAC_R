@@ -114,84 +114,34 @@ t.test((countries%>%arrange(population_density))$total_deaths_per_million[1:50],
 #444.5189  480.5875 
 
 
-ggplot(subset(data, location == 'United States'), aes(x=date)) +
+ggplot( # Plot 4: USA New Cases vs. Total Vaccinations
+  subset(data, location == 'United States'), aes(x=date)) +
   geom_line(aes(y=new_cases_smoothed_per_million), color = "darkred", na.rm=T) + 
   geom_line(aes(y=total_vaccinations_per_hundred), color="steelblue", na.rm=T) +          
-  ylab('New Deaths per Million') + ggtitle('United States: New Cases per Million vs. Total Vaccinations per Hundred') + 
+  ylab('New Cases/Vaccinations') + ggtitle('United States: New Cases per Million vs. Total Vaccinations per Hundred') + 
   theme(axis.title.x=element_blank(), legend.position = "bottom") + 
   scale_x_date(date_breaks = '1 month',date_labels = "%b%y",limits = as.Date(c('2020-10-01',(Sys.Date()-1))))
 
+ggplotly(ggplot( # Interactive version of plot 4
+  subset(data, location == 'United States'), aes(x=date)) +
+  geom_line(aes(y=new_cases_smoothed_per_million), color = "darkred", na.rm=T) + 
+  geom_line(aes(y=total_vaccinations_per_hundred), color="steelblue", na.rm=T) +          
+  ylab('New Cases/Vaccinations') + ggtitle('United States: New Cases per Million vs. Total Vaccinations per Hundred') + 
+  theme(axis.title.x=element_blank(), legend.position = "bottom") + 
+  scale_x_date(date_breaks = '1 month',date_labels = "%b%y",limits = as.Date(c('2020-02-01',(Sys.Date()-1)))))
 
+ggplot( # Plot 5: USA New Cases vs. New Vaccinations
+  subset(data, location == 'United States'), aes(x=date)) +
+  geom_line(aes(y=new_cases_smoothed_per_million), color = "darkred", na.rm=T) + 
+  geom_line(aes(y=new_vaccinations_smoothed_per_million), color="steelblue", na.rm=T) +          
+  ylab('New Cases/Vaccinations') + ggtitle('United States: New Cases per Million vs. New Vaccinations per Million') + 
+  theme(axis.title.x=element_blank(), legend.position = "bottom") + 
+  scale_x_date(date_breaks = '1 month',date_labels = "%b%y",limits = as.Date(c('2020-10-01',(Sys.Date()-1))))
 
-
-colnames(countries)
-
-
-# T-test: Comparing fatalities of lowest and highest 20 GDP/capita countries...
-t.test((countries%>%arrange(gdp_per_capita))$total_deaths_per_million[1:20],
-       (countries%>%arrange(desc(gdp_per_capita)))$total_deaths_per_million[1:20])
-
-# T-test: Comparing fatalities of lowest and highest 20 aged-70+ countries...
-t.test((countries%>%arrange(aged_70_older))$total_deaths_per_million[1:20],
-       (countries%>%arrange(desc(aged_70_older)))$total_deaths_per_million[1:20])
-
-# T-test: Comparing fatalities of 20 lowest GDP/capital and 20 oldest median age countries...
-t.test((countries%>%arrange(gdp_per_capita))$total_deaths_per_million[1:20],
-       (countries%>%arrange(desc(aged_70_older)))$total_deaths_per_million[1:20])
-
-ggplot(usa, aes(x=date, y=total_deaths, color="#990239")) + geom_point() +
-  xlab('Time') + ylab('Total Deaths') + theme(legend.position = "none") +
-  ggtitle('USA: Covid Deaths')
-
-ggplotly(ggplot(data %>% filter(grepl('United States', location)), 
-                aes(x=date, y=new_deaths, color="#990239")) + geom_point() +
-           xlab('Time') + ylab('New Deaths') + theme(legend.position = "none") +
-           ggtitle('USA: Covid New Deaths (Daily)'))
-
-ggplotly(ggplot(data %>% filter(grepl('Brazil', location)), 
-                aes(x=date, y=new_deaths, color="#990239")) + geom_point() +
-           xlab('Time') + ylab('New Deaths') + theme(legend.position = "none") +
-           ggtitle('Brazil: Covid New Deaths (Daily)'))
-
-ggplotly(ggplot(data %>% filter(grepl('India', location)), 
-                aes(x=date, y=new_deaths, color="#990239")) + geom_point() +
-           xlab('Time') + ylab('New Deaths') + theme(legend.position = "none") +
-           ggtitle('India: Covid New Deaths (Daily)'))
-
-ggplotly(ggplot(data %>% filter(grepl('India', location)), 
-                aes(x=date, y=new_cases, color="#990239")) + geom_point() +
-           xlab('Time') + ylab('New Cases') + theme(legend.position = "none") +
-           ggtitle('India: Covid New Cases (Daily)'))
-
-ggplotly(ggplot(data %>% filter(grepl('India', location)), 
-                aes(x=date, y=new_deaths, color="#990239")) + geom_point() +
-           xlab('Time') + ylab('New Deaths') + theme(legend.position = "none") +
-           ggtitle('India: Covid New Deaths (Daily)'))
-
-
-
-continents <- c('World', 'North America', 'Europe', 'European Union', 'South America',
-                'Asia', 'Africa')
-
-top_10 <- (countries%>%arrange(desc(total_deaths)) %>% 
-             filter(!(location %in% continents)))$location[1:10]
-
-top_20 <- (countries%>%arrange(desc(total_deaths)) %>% 
-             filter(!(location %in% continents)))$location[1:20]
-
-top_10
-top_20
-
-
-# New deaths smoothed, top 10 countries
-ggplot(subset(data, location %in% top_10), aes(x=date, y=new_deaths_smoothed, color=location)) + geom_line() +
-  xlab('Time') + ylab('New Deaths') + ylim(0,4000) + ggtitle('Daily Covid Deaths Worldwide') +
-  theme(legend.position = "bottom") + scale_x_date(date_breaks = '1 month',date_labels = "%b%y", limits = as.Date(c('2020-02-01',(Sys.Date()-1))))
-ggplotly(ggplot(subset(data, location %in% top_10), aes(x=date, y=new_deaths_smoothed, color=location)) + geom_line() +
-           xlab('Time') + ylab('New Deaths') + ylim(0,4000) + ggtitle('Daily Covid Deaths Worldwide') +
-           theme(legend.position = "bottom") + scale_x_date(date_breaks = '1 month',date_labels = "%b%y", limits = as.Date(c('2020-02-01',(Sys.Date()-1)))))
-
-# New deaths/million smoothed, top 20 countries
-ggplot(subset(data, location %in% top_20), aes(x=date, y=new_deaths_smoothed_per_million, color=location)) + geom_line() +
-  xlab('Time') + ylab('New Deaths/Million') + ylim(0,25) + ggtitle('Daily Covid Deaths per Million, Worldwide') +
-  theme(legend.position = "bottom") + scale_x_date(date_breaks = '1 month',date_labels = "%b%y", limits = as.Date(c('2020-02-01',(Sys.Date()-1))))
+ggplotly(ggplot( # Interactive version of plot 5
+  subset(data, location == 'United States'), aes(x=date)) +
+  geom_line(aes(y=new_cases_smoothed_per_million), color = "darkred", na.rm=T) + 
+  geom_line(aes(y=new_vaccinations_smoothed_per_million), color="steelblue", na.rm=T) +          
+  ylab('New Cases/Vaccinations') + ggtitle('United States: New Cases per Million vs. New Vaccinations per Million') + 
+  theme(axis.title.x=element_blank(), legend.position = "bottom") + 
+  scale_x_date(date_breaks = '1 month',date_labels = "%b%y",limits = as.Date(c('2020-02-01',(Sys.Date()-1)))))
