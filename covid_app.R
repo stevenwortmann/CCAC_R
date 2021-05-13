@@ -14,7 +14,7 @@ data <- data %>% select(-iso_code,-continent) %>%  arrange(desc(date))
 stat_cols <- names(data)[!names(data) %in% c('location','date')]
 
 # Compended version of what we want on app
-ggplotly(ggplot(subset(data, location %in% top_20), aes(x=date, y=new_deaths_smoothed, color=location)) + geom_line() +
+ggplotly(ggplot(subset(data, location %in% c("Israel","Mongolia")), aes(x=date, y=new_deaths_smoothed, color=location)) + geom_line() +
   xlab('Time') + ylab('New Deaths/Million') + ylim(0,4000) + ggtitle('Daily Covid Deaths per Million, Worldwide') +
   theme(legend.position = "bottom") + scale_x_date(date_breaks = '1 month',date_labels = "%b%y", limits = as.Date(c('2020-02-01',(Sys.Date()-1)))))
 
@@ -27,7 +27,7 @@ ui <- function(input, output) {# Fill in the spot we created for a plot
       sidebarPanel(
         selectInput("country", "Region:", 
                     choices=data$location[data$location %in% c("Israel","Mongolia")],),hr(),
-        selectInput("rates", "Data 1:", 
+        selectInput("rates1", "Data 1:", 
                     choices=stat_cols,
                     selected = 'total_cases',),hr(),
         selectInput("rates2", "Data 2:", 
@@ -45,10 +45,12 @@ server <-function(input, output) {
   
     # Fill in the spot we created for a plot
     output$phonePlot <- renderPlotly({
-      ggplotly(ggplot(country(), aes(x=date, y=input$rates)) + 
-        geom_line() + xlab('Time') + ylab('New Deaths/Million') + #ylim(0,4500) + 
+      ggplotly(ggplot(country(), aes(x=date)) + 
+        geom_line(aes(y=input$rates1), color="darkred", na.rm=T)) + 
+        geom_line(aes(y=input$rates2), color="steelblue", na.rm=T) + 
+        xlab('Time') + ylab('New Deaths/Million') +
         ggtitle('Daily Covid Deaths per Million, Worldwide') + theme(legend.position = "bottom") + 
-        scale_x_date(date_breaks = '1 month',date_labels = "%b%y", limits = as.Date(c('2020-02-01',(Sys.Date()-1)))))
+        scale_x_date(date_breaks = '1 month',date_labels = "%b%y", limits = as.Date(c('2020-02-01',(Sys.Date()-1))))
     })
   }
 

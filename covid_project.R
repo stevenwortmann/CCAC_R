@@ -59,6 +59,9 @@ ggplotly(ggplot( # Interactive version of plot 3
   theme(axis.title.x=element_blank(), legend.position = "none") + ylim(0,NA) +
   scale_x_date(date_breaks = '1 month',date_labels = "%b%y",limits = as.Date(c('2020-10-01',(Sys.Date()-1)))))
 
+# Median age of the world population is 29.5 yrs
+median((countries %>% arrange(desc(total_deaths_per_million)))$median_age,na.rm=T)
+
 # Average age of 10 most densely-fatal countries: 42.17778
 mean((countries %>% arrange(desc(total_deaths_per_million)))$median_age[1:10],na.rm=T)
 
@@ -67,9 +70,11 @@ mean((countries %>% arrange(desc(median_age)))$median_age[1:10],na.rm=T)
 
 (countries %>% arrange(desc(median_age)))$location[1:50] # Oldest 50 countries on Earth
 mean((countries %>% arrange(desc(median_age)))$median_age[1:50]) # Their age: 42.292
+sd((countries %>% arrange(desc(median_age)))$median_age[1:50],na.rm=T) # Stan Dev: 2.405507
 
 (countries %>% arrange((median_age)))$location[1:50] # Youngest 50 countries on Earth
 mean((countries %>% arrange((median_age)))$median_age[1:50]) # Their age: 19.068
+sd((countries %>% arrange((median_age)))$median_age[1:50],na.rm=T) # Stan Dev: 1.671788
 
 # T-test: Comparing fatalities of lowest and highest median age countries...
 
