@@ -15,29 +15,6 @@ stat_cols <- names(data)[!names(data) %in% c('location','date')]
 
 # Compended version of what we want on app
 ggplotly(ggplot(subset(data, location %in% c("Israel","Mongolia")), aes(x=date, y=new_deaths_smoothed, color=location)) + geom_line() +
-  xlab('Time') + ylab('New Deaths/Million') + ylim(0,4000) + ggtitle('Daily Covid Deaths per Million, Worldwide') +
-  theme(legend.position = "bottom") + scale_x_date(date_breaks = '1 month',date_labels = "%b%y", limits = as.Date(c('2020-02-01',(Sys.Date()-1)))))
-
-
-
-library(tidyverse)
-library(plotly)
-library(rsconnect)
-library(ggthemes)
-library(shiny)
-
-url <- 'https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/owid-covid-data.csv'
-data <- as_tibble(read.csv(url))
-data$date <- as.Date(data$date, '%Y-%m-%d')
-
-# Cleaning unnecessary coding from dataset and ordering most recent
-data <- data %>% select(-iso_code,-continent) %>%  arrange(desc(date))
-
-# Non-location, date columns for use in statistics inputs
-stat_cols <- names(data)[!names(data) %in% c('location','date')]
-
-# Compended version of what we want on app
-ggplotly(ggplot(subset(data, location %in% c("Israel","Mongolia")), aes(x=date, y=new_deaths_smoothed, color=location)) + geom_line() +
            xlab('Time') + ylab('New Deaths/Million') + ylim(0,4000) + ggtitle('Daily Covid Deaths per Million, Worldwide') +
            theme(legend.position = "bottom") + scale_x_date(date_breaks = '1 month',date_labels = "%b%y", limits = as.Date(c('2020-02-01',(Sys.Date()-1)))))
 
