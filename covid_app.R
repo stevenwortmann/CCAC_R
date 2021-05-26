@@ -63,15 +63,15 @@ ui <- function(input, output) {# Fill in the spot we created for a plot
 
 server <-function(input, output) {
   
-  country <- reactive({subset(data, location== input$country)})
+  country <- reactive({data %>% filter(location == input$country)})
   
   # Fill in the spot we created for a plot
   output$covidPlot <- renderPlotly({
     ggplotly(ggplot(country(), aes(x=date)) + 
-               geom_line(aes(y=as.numeric(input$rates1)), color="darkred", na.rm=T)) + 
+      geom_line(aes(y=input$rates1), color="darkred", na.rm=T)) + 
       #geom_line(aes(y=input$rates2), color="steelblue", na.rm=T) + 
-      xlab('Time') + ylab('New Deaths/Million') +
-      ggtitle('Daily Covid Deaths per Million, Worldwide') + theme(legend.position = "bottom") + 
+      #xlab('Time') + ylab('New Deaths/Million') +
+      #ggtitle('Daily Covid Deaths per Million, Worldwide') + theme(legend.position = "bottom") + 
       scale_x_date(date_breaks = '1 month',date_labels = "%b%y", limits = as.Date(c('2020-02-01',(Sys.Date()-1))))
   })
 }
@@ -79,6 +79,5 @@ server <-function(input, output) {
 shinyApp(ui, server) # Run the app
 
 #?selectizeInput
-
 
 ?selectizeInput
