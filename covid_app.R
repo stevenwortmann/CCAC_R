@@ -70,8 +70,8 @@ server <-function(input, output) {
     ggplotly(ggplot(country(), aes(x=date)) + 
       geom_line(aes(y=input$rates1), color="darkred", na.rm=T)) + 
       #geom_line(aes(y=input$rates2), color="steelblue", na.rm=T) + 
-      #xlab('Time') + ylab('New Deaths/Million') +
-      #ggtitle('Daily Covid Deaths per Million, Worldwide') + theme(legend.position = "bottom") + 
+      xlab('Time') + ylab('New Deaths/Million') +
+      ggtitle('Daily Covid Deaths per Million, Worldwide') + theme(legend.position = "bottom") + 
       scale_x_date(date_breaks = '1 month',date_labels = "%b%y", limits = as.Date(c('2020-02-01',(Sys.Date()-1))))
   })
 }
