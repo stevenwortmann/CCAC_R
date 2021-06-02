@@ -15,7 +15,7 @@ stat_cols <- names(data)[!names(data) %in% c('location','date')]
 
 # Compended version of what we want on app
 ggplotly(ggplot(subset(data, location %in% c("Israel","Mongolia")), aes(x=date, y=new_deaths_smoothed, color=location)) + geom_line() +
-           xlab('Time') + ylab('New Deaths/Million') + ylim(0,4000) + ggtitle('Daily Covid Deaths per Million, Worldwide') +
+           xlab('Time') + ylab('New Deaths/Million') + ggtitle('Daily Covid Deaths per Million, Worldwide') +
            theme(legend.position = "bottom") + scale_x_date(date_breaks = '1 month',date_labels = "%b%y", limits = as.Date(c('2020-02-01',(Sys.Date()-1)))))
 
 
@@ -40,21 +40,21 @@ ui <- function(input, output) {# Fill in the spot we created for a plot
 
 server <-function(input, output) {
   
-  country <- reactive({data %>% filter(location == input$country)})
+  # country <- reactive({data %>% filter(location == input$country)})
   
   # Fill in the spot we created for a plot
   output$covidPlot <- renderPlotly({
-    ggplotly(ggplot(country(), aes(x=date)) + 
-      geom_line(aes(y=input$rates1), color="darkred", na.rm=T)) + 
+    ggplotly(ggplot(subset(data, location %in% input$country), aes(x=date, y=input$rates1)) + 
+      geom_line() + #aes(y=input$rates1), color="darkred", na.rm=T)) + 
       #geom_line(aes(y=input$rates2), color="steelblue", na.rm=T) + 
       xlab('Time') + ylab('New Deaths/Million') +
       ggtitle('Daily Covid Deaths per Million, Worldwide') + theme(legend.position = "bottom") + 
       scale_x_date(date_breaks = '1 month',date_labels = "%b%y", limits = as.Date(c('2020-02-01',(Sys.Date()-1))))
-  })
+  )
+})
 }
-
+  
 shinyApp(ui, server) # Run the app
 
 #?selectizeInput
 
-?selectizeInput
