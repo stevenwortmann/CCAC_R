@@ -2,6 +2,7 @@ library(tidyverse)
 library(plotly)
 library(rsconnect)
 library(ggthemes)
+library(shiny)
 
 url <- 'https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/owid-covid-data.csv'
 data <- as_tibble(read.csv(url))
@@ -44,10 +45,10 @@ server <-function(input, output) {
   
   # Fill in the spot we created for a plot
   output$covidPlot <- renderPlotly({
-    ggplotly(ggplot(subset(data, location %in% input$country), aes(x=date, y=input$rates1)) + 
-      geom_line() + #aes(y=input$rates1), color="darkred", na.rm=T)) + 
+    ggplotly(ggplot(subset(data, location %in% input$country), aes(x=date, y=get(input$rates1))) + 
+      geom_line(color="darkred", na.rm=T) + #aes(y=input$rates1), color="darkred", na.rm=T)) + 
       #geom_line(aes(y=input$rates2), color="steelblue", na.rm=T)
-      theme(legend.position = "bottom") + 
+      theme(legend.position = "bottom") +
       scale_x_date(date_breaks = '2 month',date_labels = "%b%y", limits = as.Date(c('2020-02-01',(Sys.Date()-1))))
   )
 })
@@ -56,4 +57,8 @@ server <-function(input, output) {
 shinyApp(ui, server) # Run the app
 
 #?selectizeInput
+
+ggplotly(ggplot(subset(data, location %in% 'United States'), aes(x=date, y=new_deaths_smoothed)) + 
+  geom_line(color="darkred", na.rm=T) + theme(legend.position = "bottom") +
+    scale_x_date(date_breaks = '2 month',date_labels = "%b%y", limits = as.Date(c('2020-02-01',(Sys.Date()-1)))))
 
