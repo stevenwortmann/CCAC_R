@@ -2,7 +2,6 @@ library(tidyverse)
 library(plotly)
 library(rsconnect)
 library(ggthemes)
-library(shiny)
 
 url <- 'https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/owid-covid-data.csv'
 data <- as_tibble(read.csv(url))
@@ -13,52 +12,36 @@ data <- data %>% select(-iso_code,-continent) %>%  arrange(desc(date))
 
 # Non-location, date columns for use in statistics inputs
 stat_cols <- names(data)[!names(data) %in% c('location','date')]
+regions <- unique(data$location)
+stat_cols
 
-# Compended version of what we want on app
-ggplotly(ggplot(subset(data, location %in% c("Israel","Mongolia")), aes(x=date, y=new_deaths_smoothed, color=location)) + geom_line() +
-           xlab('Time') + ylab('New Deaths/Million') + ggtitle('Daily Covid Deaths per Million, Worldwide') +
-           theme(legend.position = "bottom") + scale_x_date(date_breaks = '1 month',date_labels = "%b%y", limits = as.Date(c('2020-02-01',(Sys.Date()-1)))))
+ui <- fluidPage(
+  titlePanel("Covid Data by Country"),
+  sidebarLayout(
+    sidebarPanel(
+      selectizeInput(
+        inputId = "regions", 
+        label = NULL,
+        # placeholder is enabled when 1st choice is an empty string
+        choices = c("Select geographic region(s)" = "", regions), 
+        multiple = TRUE),hr(),
+      selectInput("rates1", "Data set 1:", 
+                  choices=stat_cols,
+                  selected = 'new_cases_smoothed',),hr(),
+      helpText("Data from www.ourworldindata.org")),
+    mainPanel(plotlyOutput(outputId = "p")))
+)
 
-
-
-ui <- function(input, output) {# Fill in the spot we created for a plot
-  fluidPage(
-    titlePanel("Covid Data by Country"),
-    sidebarLayout(
-      sidebarPanel(
-        textInput("country", "Enter Region Name", value = "United States"),hr(),
-        selectInput("reference", "Region Reference:", 
-                    choices=data$location,
-                    selected = 'United States',),hr(),
-        selectInput("rates1", "Data set 1:", 
-                    choices=stat_cols,
-                    selected = 'total_deaths',),hr(),
-        helpText("Data from www.ourworldindata.org")),
-      
-      mainPanel(plotlyOutput("covidPlot"))
-    )
-  )}
-
-server <-function(input, output) {
-  
-  # country <- reactive({data %>% filter(location == input$country)})
-  
-  # Fill in the spot we created for a plot
-  output$covidPlot <- renderPlotly({
-    ggplotly(ggplot(subset(data, location %in% input$country), aes(x=date, y=get(input$rates1))) + 
-      geom_line(color="darkred", na.rm=T) + #aes(y=input$rates1), color="darkred", na.rm=T)) + 
-      #geom_line(aes(y=input$rates2), color="steelblue", na.rm=T)
-      theme(legend.position = "bottom") +
-      scale_x_date(date_breaks = '2 month',date_labels = "%b%y", limits = as.Date(c('2020-02-01',(Sys.Date()-1))))
-  )
-})
+server <- function(input, output, session, ...) {
+  output$p <- renderPlotly({
+    req(input$regions)
+    if (identical(input$regions, "")) return(NULL)
+    p <- ggplot(data = filter(data, location %in% input$regions)) + 
+      geom_line(aes(date, get(input$rates1), group = location, color = location))
+    height <- session$clientData$output_p_height
+    width <- session$clientData$output_p_width
+    ggplotly(p, height = height, width = width)
+  })
 }
-  
-shinyApp(ui, server) # Run the app
 
-#?selectizeInput
-
-ggplotly(ggplot(subset(data, location %in% 'United States'), aes(x=date, y=new_deaths_smoothed)) + 
-  geom_line(color="darkred", na.rm=T) + theme(legend.position = "bottom") +
-    scale_x_date(date_breaks = '2 month',date_labels = "%b%y", limits = as.Date(c('2020-02-01',(Sys.Date()-1)))))
-
+shinyApp(ui, server)
