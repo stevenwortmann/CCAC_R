@@ -25,8 +25,10 @@ ui <- fluidPage(
         inputId = "regions",label = NULL, # Place holder enabled if first choice is empty
         choices = c("Select geographic region(s)" = "", regions), 
         multiple = TRUE),
-      selectInput("rates1", "Data set 1:",choices=stat_cols,
+      selectInput("rates1", "Data set 1:",choices= stat_cols,
                   selected = 'new_cases_smoothed',),
+      selectInput("rates2", "Data set 2:",choices= stat_cols,
+                  selected = '',),
       helpText("Data from www.ourworldindata.org")),
     mainPanel(plotlyOutput(outputId = "p")))
 )
@@ -37,6 +39,7 @@ server <- function(input, output, session, ...) {
     if (identical(input$regions, "")) return(NULL) # No graph displayed for empty user input
     p <- ggplot(data = filter(data, location %in% input$regions)) + 
       geom_line(aes(date, get(input$rates1), group = location, color = location)) + 
+      geom_line(aes(date, get(input$rates2), group = location, color = location)) +
       theme(axis.title = element_blank(), legend.title = element_blank()) +
       scale_x_date(date_breaks = '3 month', date_labels = "%b%y",
                    limits = as.Date(c('2020-02-01',(Sys.Date()-1))))
